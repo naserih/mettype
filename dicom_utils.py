@@ -14,11 +14,9 @@ def get_cts(CT_files):
     '''
     slices = {}
     slices_hu = {}
-    slices_position = []
     for ct_file in CT_files:
         ds = pydicom.read_file(ct_file)
         pixel_array_hu = convert_to_hu(ds)
-
 
         # Check to see if it is an image file.
         # print ds.SOPClassUID
@@ -27,7 +25,6 @@ def get_cts(CT_files):
             # Add the image to the slices dictionary based on its z coordinate position.
             #
             slices[ds.ImagePositionPatient[2]] = ds.pixel_array
-            slices_position.append(float(ds.ImagePositionPatient[2]))
             slices_hu[ds.ImagePositionPatient[2]] = pixel_array_hu
         else:
             pass
@@ -39,8 +36,8 @@ def get_cts(CT_files):
     image_position = ds.ImagePositionPatient
     # print 'CT', image_position
     # Construct the z coordinate array from the image index.
-    z = sorted(slices.keys())
-    # z.sort()
+    z = slices.keys()
+    z.sort()
     ct_z = np.array(z)
 
     image_position[2] = ct_z[0]
@@ -77,5 +74,4 @@ def get_cts(CT_files):
     # print x, y
     # print (len(x), len(y))
     # # The coordinate of the first pixel in the numpy array for the ct is then  (x[0], y[0], z[0])
-    # print(slices_position)
-    return ct_array, ct_array_hu, x,y,z, ct_pixel_spacing, slices_position
+    return ct_array, ct_array_hu, x,y,z, ct_pixel_spacing
